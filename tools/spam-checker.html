@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folderol - Email Spam Words Checker for iGaming</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-glass-dark: rgba(0, 0, 0, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border-hover: rgba(102, 126, 234, 0.3);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-blue: #2F80ED;
+            --accent-blue-light: #56CCF2;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --accent-red: #ef4444;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(86, 204, 242, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        .orb1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            top: -100px;
+            left: -100px;
+            animation-duration: 25s;
+        }
+
+        .orb2 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #2F80ED 0%, #56CCF2 100%);
+            bottom: -150px;
+            right: -100px;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, -100px) rotate(90deg); }
+            50% { transform: translate(-100px, 100px) rotate(180deg); }
+            75% { transform: translate(-50px, -50px) rotate(270deg); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            width: 100%;
+            top: 20px;
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        nav h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+
+        nav a {
+            color: var(--text-medium);
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        nav a:hover {
+            background: rgba(147, 51, 234, 0.1);
+            color: #fff;
+            box-shadow: 0 4px 15px 0 rgba(147, 51, 234, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 0 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Spam Checker Tool */
+        .checker-section {
+            padding: 4rem 0;
+        }
+
+        .checker-container {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .checker-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .checker-header h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .email-input-group {
+            margin-bottom: 2rem;
+        }
+
+        .email-input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-medium);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .email-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        .email-textarea:focus {
+            outline: none;
+            background: rgba(147, 51, 234, 0.05);
+            border-color: rgba(147, 51, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+        }
+
+        .check-button {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px 0 rgba(147, 51, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .check-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(236, 72, 153, 0.6);
+        }
+
+        .check-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Results Section */
+        .results-container {
+            margin-top: 3rem;
+            display: none;
+        }
+
+        .results-container.show {
+            display: block;
+        }
+
+        .score-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-number.good {
+            background: linear-gradient(135deg, #27AE60 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-number.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-number.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spam-words-found {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .spam-words-found h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spam-word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .spam-word {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--accent-red);
+        }
+
+        /* Tips Section */
+        .tips-section {
+            padding: 4rem 0;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tip-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px 0 rgba(147, 51, 234, 0.2);
+            border-color: var(--glass-border-hover);
+        }
+
+        .tip-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tip-card h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tip-card p {
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .cta-box {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .cta-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-box p {
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .cta-button {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px 0 rgba(147, 51, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(236, 72, 153, 0.6);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-medium);
+            padding: 2rem 0;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 6rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+            }
+
+            nav a {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .checker-container {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Orbs -->
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" style="text-decoration:none;"><h1>FOLDEROL</h1></a>
+            <ul>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../index.html#audit">Audit</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Email Spam Words Checker</h1>
+            <p>Ensure your gaming emails avoid spam filters with our AI-powered spam word detection tool. Built specifically for casinos, sportsbooks, and iGaming operators.</p>
+        </div>
+    </section>
+
+    <!-- Spam Checker Tool -->
+    <section class="checker-section">
+        <div class="container">
+            <div class="checker-container">
+                <div class="checker-header">
+                    <h2>Check Your Email for Spam Words</h2>
+                    <p>Paste your email content below and we'll analyze it for gambling-specific spam triggers</p>
+                </div>
+                
+                <div class="email-input-group">
+                    <label for="emailContent">Email Content</label>
+                    <textarea 
+                        id="emailContent" 
+                        class="email-textarea" 
+                        placeholder="Paste your email content here... Include subject line, preheader, and body text for best results."
+                    ></textarea>
+                </div>
+                
+                <button id="checkButton" class="check-button">Analyze Email</button>
+                
+                <!-- Results Container -->
+                <div id="resultsContainer" class="results-container">
+                    <div class="score-card">
+                        <span id="scoreNumber" class="score-number">0/100</span>
+                        <span class="score-label">Spam Score</span>
+                    </div>
+                    
+                    <div id="spamWordsFound" class="spam-words-found">
+                        <h3>Spam Words Detected:</h3>
+                        <div id="spamWordList" class="spam-word-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section class="tips-section">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem; background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Avoid These Common Gaming Spam Triggers</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">💰</div>
+                    <h3>Money Terms</h3>
+                    <p>Avoid: "Free money", "Guaranteed win", "Risk-free". Use: "Bonus offer", "Promotional credit", "Welcome package".</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">🎰</div>
+                    <h3>Casino Phrases</h3>
+                    <p>Avoid: "Easy money", "Sure bet", "100% winner". Use: "Gaming experience", "Entertainment value", "Play responsibly".</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">⚡</div>
+                    <h3>Urgency Words</h3>
+                    <p>Avoid: "Act now!", "Limited time!", "Hurry!". Use: "Available today", "Current promotion", "This week's offer".</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">📧</div>
+                    <h3>Email Structure</h3>
+                    <p>Avoid: ALL CAPS, multiple exclamation marks!!!, $$$. Use: Proper capitalization, professional tone, clear CTAs.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">🌍</div>
+                    <h3>Compliance Terms</h3>
+                    <p>Always include: Age restrictions (18+), responsible gaming links, unsubscribe options, license information.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">🔒</div>
+                    <h3>Trust Signals</h3>
+                    <p>Include: License numbers, security badges, customer support info, clear terms and conditions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Ready for Better Deliverability?</h2>
+                <p>Get a comprehensive email audit and maximize your inbox placement rates.</p>
+                <a href="index.html#contact" class="cta-button">Get Your Audit</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Folderol. Email delivery solutions for the gaming industry. | <a href="../index.html" class="back-link">← Back to Folderol</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Gambling-specific spam words database
+        const spamWords = {
+            high: [
+                'free money', 'guaranteed win', 'risk free', 'no deposit required', 
+                'act now', 'limited time', 'urgent', 'winner', 'cash prize',
+                'make money fast', 'double your money', 'triple your bitcoin',
+                '100% free', '100% satisfied', 'additional income', 'be your own boss',
+                'big bucks', 'billion', 'billion dollars', 'cash bonus', 'cents on the dollar',
+                'consolidate debt', 'double your income', 'earn extra cash', 'earn money',
+                'eliminate bad credit', 'extra cash', 'extra income', 'expect to earn',
+                'fast cash', 'financial freedom', 'free gift', 'free hosting',
+                'free investment', 'free membership', 'free money', 'free preview',
+                'free quote', 'free trial', 'full refund', 'get out of debt',
+                'get paid', 'giveaway', 'guaranteed', 'increase sales',
+                'increase traffic', 'incredible deal', 'lower rates', 'lowest price',
+                'make money', 'million dollars', 'miracle', 'money back',
+                'once in lifetime', 'one time', 'pennies a day', 'potential earnings',
+                'prize', 'promise', 'pure profit', 'risk-free', 'satisfaction guaranteed',
+                'save big money', 'save up to', 'special promotion'
+            ],
+            medium: [
+                'bonus', 'jackpot', 'slots', 'poker', 'blackjack', 'roulette',
+                'betting', 'wager', 'odds', 'payout', 'withdraw', 'deposit',
+                'click here', 'click now', 'apply now', 'call now', 'get started now',
+                'order now', 'special offer', 'limited offer', 'exclusive deal',
+                'while supplies last', 'urgent', 'important information',
+                'congratulations', 'free', 'buy now', 'discount', 'save',
+                'cheap', 'affordable', 'bargain', 'best price', 'big discount',
+                'buy', 'buy direct', 'order', 'order status', 'orders shipped',
+                'clearance', 'deal', 'lifetime', 'new', 'now only',
+                'offer', 'only', 'sale', 'special', 'supplies running out',
+                'take action', 'this won\'t last', 'time limited', 'unique',
+                'warranty', 'while you sleep', 'you have been selected'
+            ],
+            low: [
+                'play', 'game', 'spin', 'bet', 'win', 'casino', 'gaming',
+                'promotion', 'offer', 'welcome', 'new player', 'vip',
+                'member', 'account', 'balance', 'credit', 'chips',
+                'tournament', 'leaderboard', 'reward', 'loyalty',
+                'entertainment', 'experience', 'enjoy', 'fun',
+                'responsible', 'secure', 'licensed', 'regulated'
+            ]
+        };
+
+        const checkButton = document.getElementById('checkButton');
+        const emailContent = document.getElementById('emailContent');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const scoreNumber = document.getElementById('scoreNumber');
+        const spamWordList = document.getElementById('spamWordList');
+
+        checkButton.addEventListener('click', analyzeEmail);
+
+        function analyzeEmail() {
+            const content = emailContent.value.toLowerCase();
+            if (!content.trim()) {
+                alert('Please enter some email content to analyze.');
+                return;
+            }
+
+            // Find spam words
+            const foundWords = [];
+            let score = 0;
+
+            // Check high-risk words (10 points each)
+            spamWords.high.forEach(word => {
+                if (content.includes(word.toLowerCase())) {
+                    foundWords.push({ word, severity: 'high' });
+                    score += 10;
+                }
+            });
+
+            // Check medium-risk words (5 points each)
+            spamWords.medium.forEach(word => {
+                if (content.includes(word.toLowerCase())) {
+                    foundWords.push({ word, severity: 'medium' });
+                    score += 5;
+                }
+            });
+
+            // Check low-risk words (2 points each)
+            spamWords.low.forEach(word => {
+                if (content.includes(word.toLowerCase())) {
+                    foundWords.push({ word, severity: 'low' });
+                    score += 2;
+                }
+            });
+
+            // Additional checks
+            if (content.match(/[A-Z]{5,}/)) score += 10; // All caps words
+            if (content.match(/\${2,}/)) score += 10; // Multiple dollar signs
+            if (content.match(/!{2,}/)) score += 10; // Multiple exclamation marks
+            if (content.match(/\b\d{1,2}\s*%\s*off\b/i)) score += 5; // Percentage off
+            
+            // Cap score at 100
+            score = Math.min(score, 100);
+
+            // Display results
+            displayResults(score, foundWords);
+        }
+
+        function displayResults(score, foundWords) {
+            resultsContainer.classList.add('show');
+            
+            // Update score
+            scoreNumber.textContent = score + '/100';
+            scoreNumber.className = 'score-number';
+            
+            if (score < 30) {
+                scoreNumber.classList.add('good');
+            } else if (score < 60) {
+                scoreNumber.classList.add('warning');
+            } else {
+                scoreNumber.classList.add('danger');
+            }
+
+            // Display found words
+            spamWordList.innerHTML = '';
+            if (foundWords.length > 0) {
+                foundWords.forEach(item => {
+                    const wordEl = document.createElement('span');
+                    wordEl.className = 'spam-word';
+                    wordEl.textContent = item.word;
+                    if (item.severity === 'high') {
+                        wordEl.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+                        wordEl.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                    } else if (item.severity === 'medium') {
+                        wordEl.style.borderColor = 'rgba(245, 158, 11, 0.6)';
+                        wordEl.style.backgroundColor = 'rgba(245, 158, 11, 0.2)';
+                        wordEl.style.color = '#f59e0b';
+                    }
+                    spamWordList.appendChild(wordEl);
+                });
+            } else {
+                spamWordList.innerHTML = '<p style="color: var(--accent-green);">No spam words detected! Your email looks clean.</p>';
+            }
+
+            // Scroll to results
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

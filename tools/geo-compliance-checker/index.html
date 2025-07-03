@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folderol - Geo-Compliance Checker for iGaming</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        nav {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            margin: 20px;
+            border-radius: 20px;
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        nav a {
+            color: var(--text-medium);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        nav a:hover {
+            background: rgba(147, 51, 234, 0.1);
+        }
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .tool-section {
+            padding: 3rem 0;
+        }
+        .jurisdiction-selector {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .jurisdiction-selector h2 {
+            color: var(--accent-pink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .jurisdiction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .jurisdiction-btn {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .jurisdiction-btn:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-color: var(--accent-purple);
+        }
+        .jurisdiction-btn.active {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(236, 72, 153, 0.2));
+            border-color: var(--accent-pink);
+            color: white;
+        }
+        .flag {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        .panel h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .check-button {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .check-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(147, 51, 234, 0.4);
+        }
+        .results-container {
+            height: 400px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .compliance-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 4px solid var(--glass-border);
+        }
+        .compliance-item.pass {
+            border-left-color: var(--accent-green);
+        }
+        .compliance-item.fail {
+            border-left-color: var(--accent-red);
+        }
+        .compliance-item.warning {
+            border-left-color: var(--accent-orange);
+        }
+        .compliance-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .status-icon {
+            font-size: 1.2rem;
+        }
+        .compliance-title {
+            font-weight: 600;
+            flex: 1;
+        }
+        .compliance-message {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .score-display {
+            background: var(--bg-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(
+                var(--accent-green) 0deg,
+                var(--accent-green) var(--score-deg, 0deg),
+                var(--glass-border) var(--score-deg, 0deg)
+            );
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .score-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+        .score-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .requirements-section {
+            padding: 3rem 0;
+        }
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .requirement-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        .requirement-card h4 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .requirement-list {
+            list-style: none;
+        }
+        .requirement-list li {
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .requirement-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+        }
+        footer {
+            background: var(--bg-glass);
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .jurisdiction-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../../index.html" style="text-decoration:none;"><h1>FOLDEROL</h1></a>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <h1>Geo-Compliance Checker</h1>
+            <p>Ensure your gambling emails comply with regulations in different jurisdictions. Check for required disclaimers, age restrictions, and prohibited terms.</p>
+        </div>
+    </section>
+    <section class="tool-section">
+        <div class="container">
+            <!-- Jurisdiction Selector -->
+            <div class="jurisdiction-selector">
+                <h2>Select Jurisdictions to Check</h2>
+                <div class="jurisdiction-grid">
+                    <div class="jurisdiction-btn active" onclick="toggleJurisdiction(this, 'uk')">
+                        <span class="flag">🇬🇧</span>
+                        <div>UK (UKGC)</div>
+                    </div>
+                    <div class="jurisdiction-btn" onclick="toggleJurisdiction(this, 'malta')">
+                        <span class="flag">🇲🇹</span>
+                        <div>Malta (MGA)</div>
+                    </div>
+                    <div class="jurisdiction-btn" onclick="toggleJurisdiction(this, 'curacao')">
+                        <span class="flag">🇨🇼</span>
+                        <div>Curacao</div>
+                    </div>
+                    <div class="jurisdiction-btn" onclick="toggleJurisdiction(this, 'sweden')">
+                        <span class="flag">🇸🇪</span>
+                        <div>Sweden</div>
+                    </div>
+                    <div class="jurisdiction-btn" onclick="toggleJurisdiction(this, 'denmark')">
+                        <span class="flag">🇩🇰</span>
+                        <div>Denmark</div>
+                    </div>
+                    <div class="jurisdiction-btn" onclick="toggleJurisdiction(this, 'spain')">
+                        <span class="flag">🇪🇸</span>
+                        <div>Spain</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="content-grid">
+                <div class="panel">
+                    <h3>Email Content</h3>
+                    <textarea id="emailContent" placeholder="Paste your email content here..."></textarea>
+                    <button class="check-button" onclick="checkCompliance()">Check Compliance</button>
+                </div>
+                <div class="panel">
+                    <h3>Compliance Results</h3>
+                    <div id="results" class="results-container">
+                        <div style="color: var(--text-muted); text-align: center; padding: 3rem;">
+                            Check your email content to see compliance results...
+                        </div>
+                    </div>
+                    <div id="scoreDisplay" class="score-display" style="display: none;">
+                        <div class="score-circle" id="scoreCircle">
+                            <div class="score-inner">
+                                <span class="score-number" id="scoreNumber">0</span>
+                                <span class="score-label">Compliance Score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Requirements Reference -->
+    <section class="requirements-section">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem; color: white;">Jurisdiction Requirements</h2>
+            <div class="requirements-grid">
+                <div class="requirement-card">
+                    <h4><span class="flag">🇬🇧</span> UK (UKGC)</h4>
+                    <ul class="requirement-list">
+                        <li>18+ age restriction clearly stated</li>
+                        <li>BeGambleAware.org link required</li>
+                        <li>Responsible gambling message</li>
+                        <li>Terms and conditions link</li>
+                        <li>Unsubscribe option</li>
+                        <li>No "risk-free" or "guaranteed win"</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h4><span class="flag">🇲🇹</span> Malta (MGA)</h4>
+                    <ul class="requirement-list">
+                        <li>License number displayed</li>
+                        <li>18+ age restriction</li>
+                        <li>Responsible gaming reference</li>
+                        <li>Clear bonus terms</li>
+                        <li>Self-exclusion information</li>
+                        <li>Support contact details</li>
+                    </ul>
+                </div>
+                <div class="requirement-card">
+                    <h4><span class="flag">🇸🇪</span> Sweden (Spelinspektionen)</h4>
+                    <ul class="requirement-list">
+                        <li>Spelpaus.se reference required</li>
+                        <li>18+ age limit (no bonus before verification)</li>
+                        <li>Maximum bonus limit compliance</li>
+                        <li>Clear wagering requirements</li>
+                        <li>Swedish language option</li>
+                        <li>License number visible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2024 Folderol. Email delivery solutions for the gaming industry.</p>
+    </footer>
+    <a href="../../index.html" class="back-link">← Back to Folderol</a>
+    <script>
+        var selectedJurisdictions = ['uk'];
+        // Compliance rules for each jurisdiction
+        var complianceRules = {
+            uk: {
+                name: 'UK (UKGC)',
+                rules: [
+                    {
+                        name: '18+ Age Restriction',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|21\+|age/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must clearly state 18+ age restriction'
+                    },
+                    {
+                        name: 'BeGambleAware Link',
+                        check: function(text) {
+                            return text.match(/begambleaware|gambleaware\.org/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must include BeGambleAware.org link'
+                    },
+                    {
+                        name: 'Responsible Gambling',
+                        check: function(text) {
+                            return text.match(/responsib|gamble.*aware|self.*exclus|limit/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should include responsible gambling messaging'
+                    },
+                    {
+                        name: 'No Misleading Terms',
+                        check: function(text) {
+                            return text.match(/risk.?free|guaranteed.*win|sure.*win|can't.*lose/i) ? 'fail' : 'pass';
+                        },
+                        message: 'Must not use "risk-free" or "guaranteed win"'
+                    },
+                    {
+                        name: 'Unsubscribe Option',
+                        check: function(text) {
+                            return text.match(/unsubscribe|opt.?out|stop.*email/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should include unsubscribe option'
+                    }
+                ]
+            },
+            malta: {
+                name: 'Malta (MGA)',
+                rules: [
+                    {
+                        name: 'License Number',
+                        check: function(text) {
+                            return text.match(/MGA|license.*number|licence.*number/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must display MGA license number'
+                    },
+                    {
+                        name: '18+ Age Restriction',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|21\+|age/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must state minimum age requirement'
+                    },
+                    {
+                        name: 'Support Contact',
+                        check: function(text) {
+                            return text.match(/support|contact|email.*@|help/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should include support contact information'
+                    }
+                ]
+            },
+            curacao: {
+                name: 'Curacao',
+                rules: [
+                    {
+                        name: 'License Reference',
+                        check: function(text) {
+                            return text.match(/curacao|cura[cç]ao|license/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should reference Curacao license'
+                    },
+                    {
+                        name: 'Age Restriction',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|21\+|age/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must include age restriction'
+                    }
+                ]
+            },
+            sweden: {
+                name: 'Sweden',
+                rules: [
+                    {
+                        name: 'Spelpaus Reference',
+                        check: function(text) {
+                            return text.match(/spelpaus/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must reference Spelpaus.se'
+                    },
+                    {
+                        name: '18+ Age Limit',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|age/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must clearly state 18+ requirement'
+                    },
+                    {
+                        name: 'Bonus Limits',
+                        check: function(text) {
+                            if (!text.match(/bonus|welcome|offer/i)) return 'pass';
+                            return text.match(/SEK|kr|maximum/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Bonuses must comply with Swedish limits'
+                    }
+                ]
+            },
+            denmark: {
+                name: 'Denmark',
+                rules: [
+                    {
+                        name: 'ROFUS Reference',
+                        check: function(text) {
+                            return text.match(/rofus|stopspillet/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should reference ROFUS self-exclusion'
+                    },
+                    {
+                        name: 'Age Requirement',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|age/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must state 18+ age requirement'
+                    }
+                ]
+            },
+            spain: {
+                name: 'Spain',
+                rules: [
+                    {
+                        name: 'Juego Seguro',
+                        check: function(text) {
+                            return text.match(/juego.*seguro|jugarbien/i) ? 'pass' : 'warning';
+                        },
+                        message: 'Should include safe gaming reference'
+                    },
+                    {
+                        name: '18+ Restriction',
+                        check: function(text) {
+                            return text.match(/18\+|eighteen|mayor.*edad/i) ? 'pass' : 'fail';
+                        },
+                        message: 'Must include 18+ age restriction'
+                    }
+                ]
+            }
+        };
+        function toggleJurisdiction(btn, jurisdiction) {
+            btn.classList.toggle('active');
+            if (selectedJurisdictions.includes(jurisdiction)) {
+                selectedJurisdictions = selectedJurisdictions.filter(function(j) { return j !== jurisdiction; });
+            } else {
+                selectedJurisdictions.push(jurisdiction);
+            }
+        }
+        function checkCompliance() {
+            var content = document.getElementById('emailContent').value;
+            if (!content.trim()) {
+                alert('Please enter email content to check');
+                return;
+            }
+            if (selectedJurisdictions.length === 0) {
+                alert('Please select at least one jurisdiction');
+                return;
+            }
+            var results = [];
+            var totalScore = 0;
+            var totalChecks = 0;
+            // Check each selected jurisdiction
+            selectedJurisdictions.forEach(function(jurisdiction) {
+                var rules = complianceRules[jurisdiction];
+                if (rules) {
+                    rules.rules.forEach(function(rule) {
+                        var status = rule.check(content);
+                        results.push({
+                            jurisdiction: rules.name,
+                            rule: rule.name,
+                            status: status,
+                            message: rule.message
+                        });
+                        totalChecks++;
+                        if (status === 'pass') totalScore += 100;
+                        else if (status === 'warning') totalScore += 50;
+                    });
+                }
+            });
+            // Display results
+            displayResults(results, Math.round(totalScore / totalChecks));
+        }
+        function displayResults(results, score) {
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            // Group by status
+            var passes = results.filter(function(r) { return r.status === 'pass'; });
+            var warnings = results.filter(function(r) { return r.status === 'warning'; });
+            var failures = results.filter(function(r) { return r.status === 'fail'; });
+            // Display failures first
+            failures.forEach(function(result) {
+                resultsDiv.innerHTML += createResultItem(result);
+            });
+            // Then warnings
+            warnings.forEach(function(result) {
+                resultsDiv.innerHTML += createResultItem(result);
+            });
+            // Then passes
+            passes.forEach(function(result) {
+                resultsDiv.innerHTML += createResultItem(result);
+            });
+            // Update score display
+            var scoreDisplay = document.getElementById('scoreDisplay');
+            scoreDisplay.style.display = 'block';
+            document.getElementById('scoreNumber').textContent = score;
+            // Update score circle
+            var scoreDeg = (score / 100) * 360;
+            document.getElementById('scoreCircle').style.setProperty('--score-deg', scoreDeg + 'deg');
+        }
+        function createResultItem(result) {
+            var icon = result.status === 'pass' ? '✓' : (result.status === 'warning' ? '⚠️' : '✗');
+            var statusClass = result.status;
+            return '<div class="compliance-item ' + statusClass + '">' +
+                '<div class="compliance-header">' +
+                    '<span class="status-icon">' + icon + '</span>' +
+                    '<span class="compliance-title">' + result.jurisdiction + ' - ' + result.rule + '</span>' +
+                '</div>' +
+                '<div class="compliance-message">' + result.message + '</div>' +
+            '</div>';
+        }
+        // Load example
+        window.onload = function() {
+            document.getElementById('emailContent').value = 'Get 100% Welcome Bonus up to €500!\n\nJoin our casino today and receive an amazing first deposit bonus. Play hundreds of exciting slots and table games.\n\nThis offer is available to new players only. Terms and conditions apply.\n\nGamble responsibly.';
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folderol - Send Time Optimizer for iGaming</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f59e0b;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        nav {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            margin: 20px;
+            border-radius: 20px;
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        nav a {
+            color: var(--text-medium);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        nav a:hover {
+            background: rgba(147, 51, 234, 0.1);
+        }
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .optimizer-section {
+            padding: 3rem 0;
+        }
+        .input-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            color: var(--accent-pink);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        select {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        select option {
+            background: var(--bg-dark);
+        }
+        .calculate-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(147, 51, 234, 0.4);
+        }
+        .results-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: none;
+        }
+        .results-panel.show {
+            display: block;
+        }
+        .best-time-display {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .best-time-display h2 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+        }
+        .time-display {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .time-zone {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+        .heatmap-container {
+            margin-bottom: 3rem;
+        }
+        .heatmap-container h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .heatmap {
+            display: grid;
+            grid-template-columns: 40px repeat(7, 1fr);
+            gap: 4px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .heatmap-header {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 0.5rem;
+        }
+        .heatmap-time {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .heat-0 { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+        .heat-1 { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        .heat-2 { background: rgba(147, 51, 234, 0.3); color: #c4b5fd; }
+        .heat-3 { background: rgba(236, 72, 153, 0.4); color: #fbcfe8; }
+        .heat-4 { background: rgba(245, 158, 11, 0.5); color: #fed7aa; }
+        .heat-5 { background: rgba(239, 68, 68, 0.6); color: #fecaca; }
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        .recommendation-card h4 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .recommendation-card p {
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+        .time-slot {
+            background: rgba(147, 51, 234, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--accent-pink);
+            display: inline-block;
+            margin: 0.2rem;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .tips-section {
+            padding: 3rem 0;
+        }
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .tip-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        .tip-card h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+        }
+        .tip-card ul {
+            list-style: none;
+            color: var(--text-medium);
+        }
+        .tip-card li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .tip-card li:before {
+            content: '⏰';
+            position: absolute;
+            left: 0;
+        }
+        footer {
+            background: var(--bg-glass);
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        @media (max-width: 768px) {
+            .heatmap {
+                font-size: 0.8rem;
+            }
+            .time-display {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../../index.html" style="text-decoration:none;"><h1>FOLDEROL</h1></a>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <h1>Send Time Optimizer</h1>
+            <p>Find the perfect time to send your gaming emails based on player behavior, game type, and timezone. Maximize open rates and engagement.</p>
+        </div>
+    </section>
+    <section class="optimizer-section">
+        <div class="container">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="gameType">Game Type</label>
+                        <select id="gameType">
+                            <option value="slots">Slots</option>
+                            <option value="sports">Sports Betting</option>
+                            <option value="poker">Poker</option>
+                            <option value="casino">Live Casino</option>
+                            <option value="bingo">Bingo</option>
+                            <option value="lottery">Lottery</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="region">Player Region</label>
+                        <select id="region">
+                            <option value="uk">UK & Ireland</option>
+                            <option value="europe">Western Europe</option>
+                            <option value="nordic">Nordic Countries</option>
+                            <option value="america">Americas</option>
+                            <option value="asia">Asia-Pacific</option>
+                            <option value="global">Global Mix</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="emailType">Email Type</label>
+                        <select id="emailType">
+                            <option value="bonus">Bonus Offers</option>
+                            <option value="tournament">Tournament Invites</option>
+                            <option value="vip">VIP Communications</option>
+                            <option value="reactivation">Win-Back Campaigns</option>
+                            <option value="transactional">Transactional</option>
+                            <option value="newsletter">Newsletter</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="playerValue">Player Segment</label>
+                        <select id="playerValue">
+                            <option value="vip">VIP Players</option>
+                            <option value="regular">Regular Players</option>
+                            <option value="casual">Casual Players</option>
+                            <option value="new">New Players</option>
+                            <option value="dormant">Dormant Players</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="calculate-button" onclick="calculateOptimalTime()">Calculate Optimal Send Time</button>
+            </div>
+            <!-- Results Panel -->
+            <div id="resultsPanel" class="results-panel">
+                <!-- Best Time Display -->
+                <div class="best-time-display">
+                    <h2>Optimal Send Time</h2>
+                    <div id="bestTime" class="time-display">--:--</div>
+                    <div id="timezone" class="time-zone">Player's Local Time</div>
+                </div>
+                <!-- Heatmap -->
+                <div class="heatmap-container">
+                    <h3>Weekly Engagement Heatmap</h3>
+                    <div id="heatmap" class="heatmap"></div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color heat-0"></div>
+                            <span>Low</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color heat-3"></div>
+                            <span>Medium</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color heat-5"></div>
+                            <span>High</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Recommendations -->
+                <div class="recommendations">
+                    <div class="recommendation-card">
+                        <h4>🎯 Primary Window</h4>
+                        <p id="primaryWindow">Loading...</p>
+                    </div>
+                    <div class="recommendation-card">
+                        <h4>⚡ Secondary Windows</h4>
+                        <p id="secondaryWindows">Loading...</p>
+                    </div>
+                    <div class="recommendation-card">
+                        <h4>❌ Avoid These Times</h4>
+                        <p id="avoidTimes">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Tips Section -->
+    <section class="tips-section">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem; color: white;">Timing Best Practices</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h3>🎰 Slots Players</h3>
+                    <ul>
+                        <li>Evening peaks: 7-10 PM</li>
+                        <li>Weekend mornings: 10-11 AM</li>
+                        <li>Avoid early mornings weekdays</li>
+                        <li>Friday paydays are golden</li>
+                    </ul>
+                </div>
+                <div class="tip-card">
+                    <h3>⚽ Sports Bettors</h3>
+                    <ul>
+                        <li>Pre-match: 2-4 hours before</li>
+                        <li>Lunch breaks: 12-1 PM</li>
+                        <li>Thursday/Friday for weekend</li>
+                        <li>Avoid during live matches</li>
+                    </ul>
+                </div>
+                <div class="tip-card">
+                    <h3>🃏 Poker Players</h3>
+                    <ul>
+                        <li>Late evening: 9 PM-2 AM</li>
+                        <li>Sunday tournaments prep</li>
+                        <li>Avoid business hours</li>
+                        <li>Weekend nights are prime</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2024 Folderol. Email delivery solutions for the gaming industry.</p>
+    </footer>
+    <a href="../../index.html" class="back-link">← Back to Folderol</a>
+    <script>
+        // Engagement data based on game type, region, etc.
+        var engagementPatterns = {
+            slots: {
+                uk: {
+                    bestTime: '19:30',
+                    heatmap: generateSlotsHeatmap(),
+                    primary: 'Evenings 7:30-10:00 PM are prime time for UK slots players, especially on Fridays',
+                    secondary: ['Lunch breaks 12-1 PM', 'Weekend mornings 10-11 AM', 'Post-dinner 8-9 PM'],
+                    avoid: ['Monday mornings', 'Very late night (2-6 AM)', 'Sunday afternoons']
+                }
+            },
+            sports: {
+                uk: {
+                    bestTime: '17:00',
+                    heatmap: generateSportsHeatmap(),
+                    primary: '5:00-6:00 PM catches commuters and pre-match planning',
+                    secondary: ['Lunch 12-1 PM', 'Thursday evenings', 'Saturday mornings'],
+                    avoid: ['During live matches', 'Monday mornings', 'Late Sunday']
+                }
+            },
+            poker: {
+                uk: {
+                    bestTime: '21:00',
+                    heatmap: generatePokerHeatmap(),
+                    primary: 'Late evenings 9:00 PM-12:00 AM when serious players are active',
+                    secondary: ['Weekend afternoons', 'Friday nights', 'Sunday tournament prep'],
+                    avoid: ['Business hours', 'Early mornings', 'Monday-Tuesday evenings']
+                }
+            }
+        };
+        function generateSlotsHeatmap() {
+            // Generate realistic heatmap data for slots
+            var heatmap = [];
+            var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            for (var hour = 0; hour < 24; hour++) {
+                var row = [];
+                for (var day = 0; day < 7; day++) {
+                    var heat = 0;
+                    // Evening peaks
+                    if (hour >= 19 && hour <= 22) heat = 4;
+                    else if (hour >= 18 && hour <= 23) heat = 3;
+                    // Weekend mornings
+                    if (day >= 5 && hour >= 10 && hour <= 12) heat = 3;
+                    // Friday payday boost
+                    if (day === 4 && hour >= 17) heat = 5;
+                    // Late night weekend
+                    if (day >= 5 && hour >= 0 && hour <= 2) heat = 3;
+                    // Work hours low
+                    if (day < 5 && hour >= 9 && hour <= 17) heat = 1;
+                    // Early morning very low
+                    if (hour >= 3 && hour <= 7) heat = 0;
+                    row.push(heat);
+                }
+                heatmap.push(row);
+            }
+            return heatmap;
+        }
+        function generateSportsHeatmap() {
+            var heatmap = [];
+            for (var hour = 0; hour < 24; hour++) {
+                var row = [];
+                for (var day = 0; day < 7; day++) {
+                    var heat = 0;
+                    // Pre-evening matches
+                    if (hour >= 16 && hour <= 19) heat = 4;
+                    // Lunch breaks
+                    if (hour === 12) heat = 3;
+                    // Weekend afternoons
+                    if (day >= 5 && hour >= 14 && hour <= 17) heat = 5;
+                    // Thursday/Friday planning
+                    if ((day === 3 || day === 4) && hour >= 17 && hour <= 20) heat = 4;
+                    // Early morning low
+                    if (hour <= 8) heat = 0;
+                    row.push(heat);
+                }
+                heatmap.push(row);
+            }
+            return heatmap;
+        }
+        function generatePokerHeatmap() {
+            var heatmap = [];
+            for (var hour = 0; hour < 24; hour++) {
+                var row = [];
+                for (var day = 0; day < 7; day++) {
+                    var heat = 0;
+                    // Late night peak
+                    if (hour >= 21 || hour <= 2) heat = 5;
+                    else if (hour >= 19 && hour <= 23) heat = 4;
+                    // Weekend boost
+                    if (day >= 5) heat = Math.min(heat + 1, 5);
+                    // Business hours very low
+                    if (day < 5 && hour >= 9 && hour <= 17) heat = 0;
+                    // Sunday tournament prep
+                    if (day === 6 && hour >= 18) heat = 5;
+                    row.push(heat);
+                }
+                heatmap.push(row);
+            }
+            return heatmap;
+        }
+        function calculateOptimalTime() {
+            var gameType = document.getElementById('gameType').value;
+            var region = document.getElementById('region').value;
+            // For demo, we'll use UK patterns for all regions
+            var pattern = engagementPatterns[gameType] || engagementPatterns.slots;
+            var data = pattern.uk || pattern[Object.keys(pattern)[0]];
+            // Show results
+            document.getElementById('resultsPanel').classList.add('show');
+            document.getElementById('bestTime').textContent = data.bestTime;
+            document.getElementById('timezone').textContent = getTimezoneText(region);
+            // Generate heatmap
+            generateHeatmapDisplay(data.heatmap);
+            // Update recommendations
+            document.getElementById('primaryWindow').innerHTML = data.primary;
+            var secondaryHTML = '';
+            data.secondary.forEach(function(time) {
+                secondaryHTML += '<span class="time-slot">' + time + '</span> ';
+            });
+            document.getElementById('secondaryWindows').innerHTML = secondaryHTML;
+            var avoidHTML = '';
+            data.avoid.forEach(function(time) {
+                avoidHTML += '<span class="time-slot" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">' + time + '</span> ';
+            });
+            document.getElementById('avoidTimes').innerHTML = avoidHTML;
+            // Scroll to results
+            document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+        function getTimezoneText(region) {
+            var timezones = {
+                uk: 'GMT/BST (UK Time)',
+                europe: 'CET (Central European Time)',
+                nordic: 'CET (Nordic Time)',
+                america: 'EST/PST (Local Time)',
+                asia: 'Local Time (Various)',
+                global: 'Recipient\'s Local Time'
+            };
+            return timezones[region] || 'Local Time';
+        }
+        function generateHeatmapDisplay(heatmapData) {
+            var heatmapDiv = document.getElementById('heatmap');
+            heatmapDiv.innerHTML = '';
+            // Add header
+            heatmapDiv.innerHTML += '<div></div>'; // Empty corner
+            var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            days.forEach(function(day) {
+                heatmapDiv.innerHTML += '<div class="heatmap-header">' + day + '</div>';
+            });
+            // Add rows
+            for (var hour = 0; hour < 24; hour++) {
+                // Add time label
+                var timeLabel = hour.toString().padStart(2, '0') + ':00';
+                heatmapDiv.innerHTML += '<div class="heatmap-time">' + timeLabel + '</div>';
+                // Add cells
+                for (var day = 0; day < 7; day++) {
+                    var heat = heatmapData[hour][day];
+                    var engagement = ['0%', '20%', '40%', '60%', '80%', '95%'][heat];
+                    heatmapDiv.innerHTML += '<div class="heatmap-cell heat-' + heat + '" title="' + 
+                        days[day] + ' ' + timeLabel + ' - ' + engagement + ' engagement">' + 
+                        engagement + '</div>';
+                }
+            }
+        }
+        // Initialize with example
+        window.onload = function() {
+            // Optionally calculate for default values
+        };
+    </script>
+</body>
+</html> 

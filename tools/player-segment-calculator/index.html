@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folderol - Player Segment Calculator for iGaming</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            margin: 20px;
+            border-radius: 20px;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-medium);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(147, 51, 234, 0.1);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            padding: 3rem 0;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .input-panel h2 {
+            color: var(--accent-pink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-gold);
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-value {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .calculate-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(147, 51, 234, 0.4);
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: none;
+        }
+
+        .results-panel.show {
+            display: block;
+        }
+
+        .segment-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .segment-badge {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .segment-vip {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+        }
+
+        .segment-high {
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+        }
+
+        .segment-medium {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        }
+
+        .segment-low {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .segment-risk {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .segment-description {
+            color: var(--text-medium);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Recommendations */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .rec-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rec-title {
+            color: var(--accent-pink);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .rec-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        /* Strategy Section */
+        .strategy-panel {
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .strategy-panel h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+        }
+
+        .strategy-list {
+            list-style: none;
+        }
+
+        .strategy-list li {
+            color: var(--text-medium);
+            margin-bottom: 0.8rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .strategy-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        /* Value Chart */
+        .value-chart {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .value-chart h3 {
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-label {
+            width: 120px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .chart-progress {
+            flex: 1;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 1rem;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9333ea 0%, #ec4899 100%);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+        }
+
+        .chart-value {
+            width: 80px;
+            text-align: right;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        /* Segment Matrix */
+        .segment-matrix {
+            padding: 3rem 0;
+        }
+
+        .matrix-container {
+            background: var(--bg-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .matrix-table th {
+            background: rgba(147, 51, 234, 0.1);
+            color: var(--accent-pink);
+            font-weight: 600;
+        }
+
+        .matrix-table td {
+            color: var(--text-medium);
+        }
+
+        .do-tag {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .dont-tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        footer {
+            background: var(--bg-glass);
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../../index.html" style="text-decoration:none;"><h1>FOLDEROL</h1></a>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>Player Segment Calculator</h1>
+            <p>Calculate optimal email frequency and content strategy based on player value, activity, and lifetime metrics. Maximize revenue while preventing churn.</p>
+        </div>
+    </section>
+
+    <section class="calculator-section">
+        <div class="container">
+            <div class="calculator-grid">
+                <!-- Input Panel -->
+                <div class="input-panel">
+                    <h2>Player Metrics</h2>
+                    
+                    <div class="input-group">
+                        <label for="lifetimeValue">Player Lifetime Value (LTV)</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="lifetimeValue" value="1200" min="0" max="100000">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="monthlyDeposits">Average Monthly Deposits</label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="monthlyDeposits" value="300" min="0" max="50000">
+                        </div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label>Days Since Last Activity</label>
+                            <span class="slider-value" id="daysInactiveValue">7 days</span>
+                        </div>
+                        <input type="range" id="daysInactive" min="0" max="365" value="7" oninput="updateSlider('daysInactive')">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label>Account Age</label>
+                            <span class="slider-value" id="accountAgeValue">6 months</span>
+                        </div>
+                        <input type="range" id="accountAge" min="0" max="60" value="6" oninput="updateSlider('accountAge')">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label>Game Types Played</label>
+                            <span class="slider-value" id="gameTypesValue">3 types</span>
+                        </div>
+                        <input type="range" id="gameTypes" min="1" max="10" value="3" oninput="updateSlider('gameTypes')">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label>Email Engagement Rate</label>
+                            <span class="slider-value" id="engagementRateValue">25%</span>
+                        </div>
+                        <input type="range" id="engagementRate" min="0" max="100" value="25" oninput="updateSlider('engagementRate')">
+                    </div>
+                    
+                    <button class="calculate-button" onclick="calculateSegment()">Calculate Player Segment</button>
+                </div>
+                
+                <!-- Results Panel -->
+                <div id="resultsPanel" class="results-panel">
+                    <div class="segment-display">
+                        <div id="segmentBadge" class="segment-badge">-</div>
+                        <p id="segmentDescription" class="segment-description">Enter player metrics to calculate segment</p>
+                    </div>
+                    
+                    <div class="recommendations-grid">
+                        <div class="recommendation-card">
+                            <div class="rec-icon">📧</div>
+                            <div class="rec-title">Email Frequency</div>
+                            <div id="emailFrequency" class="rec-value">-</div>
+                        </div>
+                        
+                        <div class="recommendation-card">
+                            <div class="rec-icon">💰</div>
+                            <div class="rec-title">Max Bonus Value</div>
+                            <div id="maxBonus" class="rec-value">-</div>
+                        </div>
+                        
+                        <div class="recommendation-card">
+                            <div class="rec-icon">🎯</div>
+                            <div class="rec-title">Content Focus</div>
+                            <div id="contentFocus" class="rec-value">-</div>
+                        </div>
+                        
+                        <div class="recommendation-card">
+                            <div class="rec-icon">⚠️</div>
+                            <div class="rec-title">Churn Risk</div>
+                            <div id="churnRisk" class="rec-value">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-panel">
+                        <h3>📋 Recommended Strategy</h3>
+                        <ul id="strategyList" class="strategy-list">
+                            <li>Calculate player segment to see recommendations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="value-chart">
+                        <h3>Player Value Breakdown</h3>
+                        <div class="chart-bar">
+                            <span class="chart-label">LTV Score</span>
+                            <div class="chart-progress">
+                                <div id="ltvBar" class="chart-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="ltvScore" class="chart-value">0%</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Activity Score</span>
+                            <div class="chart-progress">
+                                <div id="activityBar" class="chart-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="activityScore" class="chart-value">0%</span>
+                        </div>
+                        <div class="chart-bar">
+                            <span class="chart-label">Engagement</span>
+                            <div class="chart-progress">
+                                <div id="engagementBar" class="chart-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="engagementScore" class="chart-value">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Segment Matrix -->
+    <section class="segment-matrix">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem; color: white;">Player Segment Matrix</h2>
+            <div class="matrix-container">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Segment</th>
+                            <th>LTV Range</th>
+                            <th>Email Frequency</th>
+                            <th>Content Strategy</th>
+                            <th>Do's</th>
+                            <th>Don'ts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color: var(--accent-gold)">VIP Whales</strong></td>
+                            <td>$5,000+</td>
+                            <td>2-3x per week</td>
+                            <td>Exclusive, Personal</td>
+                            <td><span class="do-tag">Personal account manager</span></td>
+                            <td><span class="dont-tag">Mass promotions</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-purple)">High Rollers</strong></td>
+                            <td>$1,000-$5,000</td>
+                            <td>3-4x per week</td>
+                            <td>Premium offers</td>
+                            <td><span class="do-tag">Early access</span></td>
+                            <td><span class="dont-tag">Low-value bonuses</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-blue)">Regular Players</strong></td>
+                            <td>$200-$1,000</td>
+                            <td>2-3x per week</td>
+                            <td>Balanced mix</td>
+                            <td><span class="do-tag">Loyalty rewards</span></td>
+                            <td><span class="dont-tag">Over-communication</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-green)">Casual Players</strong></td>
+                            <td>$50-$200</td>
+                            <td>1-2x per week</td>
+                            <td>Entertainment focus</td>
+                            <td><span class="do-tag">Fun content</span></td>
+                            <td><span class="dont-tag">Pressure tactics</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--accent-red)">At-Risk Players</strong></td>
+                            <td>Any (30+ days inactive)</td>
+                            <td>1x per week max</td>
+                            <td>Win-back offers</td>
+                            <td><span class="do-tag">Special incentives</span></td>
+                            <td><span class="dont-tag">Aggressive messaging</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Folderol. Email delivery solutions for the gaming industry.</p>
+    </footer>
+
+    <a href="../../index.html" class="back-link">← Back to Folderol</a>
+
+    <script>
+        function updateSlider(sliderId) {
+            var slider = document.getElementById(sliderId);
+            var valueDisplay = document.getElementById(sliderId + 'Value');
+            var value = slider.value;
+            
+            switch(sliderId) {
+                case 'daysInactive':
+                    valueDisplay.textContent = value + ' days';
+                    break;
+                case 'accountAge':
+                    valueDisplay.textContent = value + ' months';
+                    break;
+                case 'gameTypes':
+                    valueDisplay.textContent = value + ' types';
+                    break;
+                case 'engagementRate':
+                    valueDisplay.textContent = value + '%';
+                    break;
+            }
+        }
+        
+        function calculateSegment() {
+            // Get values
+            var ltv = parseFloat(document.getElementById('lifetimeValue').value) || 0;
+            var monthlyDeposits = parseFloat(document.getElementById('monthlyDeposits').value) || 0;
+            var daysInactive = parseInt(document.getElementById('daysInactive').value) || 0;
+            var accountAge = parseInt(document.getElementById('accountAge').value) || 0;
+            var gameTypes = parseInt(document.getElementById('gameTypes').value) || 0;
+            var engagementRate = parseInt(document.getElementById('engagementRate').value) || 0;
+            
+            // Calculate scores
+            var ltvScore = Math.min((ltv / 5000) * 100, 100);
+            var activityScore = Math.max(100 - (daysInactive * 2), 0);
+            var engagementScore = engagementRate;
+            
+            // Determine segment
+            var segment = determineSegment(ltv, daysInactive, monthlyDeposits, engagementRate);
+            
+            // Show results
+            document.getElementById('resultsPanel').classList.add('show');
+            displaySegment(segment);
+            updateScoreBars(ltvScore, activityScore, engagementScore);
+            
+            // Scroll to results
+            document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function determineSegment(ltv, daysInactive, monthlyDeposits, engagement) {
+            // At-risk check first
+            if (daysInactive > 30) {
+                return {
+                    name: 'At-Risk Player',
+                    class: 'segment-risk',
+                    description: 'This player needs immediate attention with targeted win-back campaigns',
+                    frequency: '1x per week',
+                    maxBonus: '$' + Math.round(monthlyDeposits * 2),
+                    contentFocus: 'Win-Back',
+                    churnRisk: 'Very High',
+                    strategies: [
+                        'Send personalized "We miss you" message within 48 hours',
+                        'Offer exclusive comeback bonus (200% match)',
+                        'Highlight new games or features launched since last visit',
+                        'Include time-limited offer to create urgency',
+                        'Consider manual outreach for high-value players',
+                        'Avoid generic mass emails - personalization is critical'
+                    ]
+                };
+            }
+            
+            // Segment by value
+            if (ltv >= 5000) {
+                return {
+                    name: 'VIP Whale',
+                    class: 'segment-vip',
+                    description: 'Ultra high-value player requiring white-glove service and exclusive treatment',
+                    frequency: '2-3x per week',
+                    maxBonus: '$' + Math.round(monthlyDeposits * 5),
+                    contentFocus: 'Exclusive VIP',
+                    churnRisk: 'Low',
+                    strategies: [
+                        'Assign dedicated account manager',
+                        'Offer exclusive VIP-only tournaments and events',
+                        'Provide early access to new games',
+                        'Send personalized birthday and holiday gifts',
+                        'Invite to real-world VIP events',
+                        'Custom bonus structures and higher limits',
+                        'Priority customer support with direct phone line'
+                    ]
+                };
+            } else if (ltv >= 1000) {
+                return {
+                    name: 'High Roller',
+                    class: 'segment-high',
+                    description: 'High-value player who deserves premium treatment and targeted offers',
+                    frequency: '3-4x per week',
+                    maxBonus: '$' + Math.round(monthlyDeposits * 3),
+                    contentFocus: 'Premium',
+                    churnRisk: 'Low-Medium',
+                    strategies: [
+                        'Send exclusive high-roller tournament invites',
+                        'Offer cashback on losses (10-15%)',
+                        'Provide faster withdrawal processing',
+                        'Create tiered loyalty rewards',
+                        'Include in VIP preview events',
+                        'Personalize offers based on game preferences'
+                    ]
+                };
+            } else if (ltv >= 200) {
+                return {
+                    name: 'Regular Player',
+                    class: 'segment-medium',
+                    description: 'Core player base requiring consistent engagement and balanced offers',
+                    frequency: '2-3x per week',
+                    maxBonus: '$' + Math.round(monthlyDeposits * 1.5),
+                    contentFocus: 'Balanced',
+                    churnRisk: 'Medium',
+                    strategies: [
+                        'Focus on reload bonuses and free spins',
+                        'Highlight loyalty program progression',
+                        'Send game recommendations based on history',
+                        'Include responsible gaming reminders',
+                        'Offer weekend promotions and happy hours',
+                        'Create social competition elements'
+                    ]
+                };
+            } else {
+                return {
+                    name: 'Casual Player',
+                    class: 'segment-low',
+                    description: 'Low-frequency player who needs entertainment-focused content',
+                    frequency: '1-2x per week',
+                    maxBonus: '$' + Math.round(Math.max(monthlyDeposits, 50)),
+                    contentFocus: 'Entertainment',
+                    churnRisk: 'High',
+                    strategies: [
+                        'Focus on fun and entertainment value',
+                        'Offer no-deposit bonuses and free play',
+                        'Highlight jackpot winners and big wins',
+                        'Send simple, visually appealing emails',
+                        'Avoid complex wagering requirements',
+                        'Include social proof and testimonials'
+                    ]
+                };
+            }
+        }
+        
+        function displaySegment(segment) {
+            var badge = document.getElementById('segmentBadge');
+            badge.textContent = segment.name;
+            badge.className = 'segment-badge ' + segment.class;
+            
+            document.getElementById('segmentDescription').textContent = segment.description;
+            document.getElementById('emailFrequency').textContent = segment.frequency;
+            document.getElementById('maxBonus').textContent = segment.maxBonus;
+            document.getElementById('contentFocus').textContent = segment.contentFocus;
+            document.getElementById('churnRisk').textContent = segment.churnRisk;
+            
+            // Update strategies
+            var strategyList = document.getElementById('strategyList');
+            strategyList.innerHTML = '';
+            segment.strategies.forEach(function(strategy) {
+                strategyList.innerHTML += '<li>' + strategy + '</li>';
+            });
+        }
+        
+        function updateScoreBars(ltv, activity, engagement) {
+            // Animate bars
+            setTimeout(function() {
+                document.getElementById('ltvBar').style.width = ltv + '%';
+                document.getElementById('ltvScore').textContent = Math.round(ltv) + '%';
+                
+                document.getElementById('activityBar').style.width = activity + '%';
+                document.getElementById('activityScore').textContent = Math.round(activity) + '%';
+                
+                document.getElementById('engagementBar').style.width = engagement + '%';
+                document.getElementById('engagementScore').textContent = Math.round(engagement) + '%';
+            }, 100);
+        }
+        
+        // Initialize
+        window.onload = function() {
+            // Set initial slider values
+            updateSlider('daysInactive');
+            updateSlider('accountAge');
+            updateSlider('gameTypes');
+            updateSlider('engagementRate');
+        };
+    </script>
+</body>
+</html> 

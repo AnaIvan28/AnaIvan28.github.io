@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folderol - Bonus Terms Optimizer for iGaming</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --accent-red: #ef4444;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        nav {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            margin: 20px;
+            border-radius: 20px;
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        nav h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        nav ul { display: flex; list-style: none; gap: 2rem; }
+        nav a {
+            color: var(--text-medium);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        nav a:hover { background: rgba(147, 51, 234, 0.1); }
+        .hero { padding: 4rem 0; text-align: center; }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.2rem; color: var(--text-medium); max-width: 700px; margin: 0 auto; }
+        .tool-section { padding: 3rem 0; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+        .panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            min-height: 500px;
+        }
+        .panel h2 { text-align: center; margin-bottom: 1rem; color: var(--accent-pink); }
+        textarea {
+            width: 100%; height: 300px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border); border-radius: 10px; padding: 1rem;
+            color: white; font-family: inherit; resize: vertical;
+        }
+        .output-area {
+            width: 100%; height: 300px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border); border-radius: 10px; padding: 1rem;
+            color: white; overflow-y: auto;
+        }
+        button {
+            width: 100%; padding: 1rem; margin-top: 1rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none; border-radius: 10px; color: white; font-weight: 700;
+            font-size: 1.1rem; cursor: pointer; text-transform: uppercase; transition: all 0.3s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(147, 51, 234, 0.4); }
+        .replaced {
+            background: rgba(34, 197, 94, 0.2); color: var(--accent-green);
+            padding: 2px 4px; border-radius: 4px; font-weight: 600;
+        }
+        .stats {
+            background: var(--bg-glass); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 1.5rem; margin-top: 1rem; text-align: center; display: none;
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+        .stat-value { font-size: 2rem; color: var(--accent-gold); font-weight: 700; }
+        .stat-label { font-size: 0.9rem; color: var(--text-muted); }
+        .examples { padding: 3rem 0; }
+        .examples h2 { text-align: center; font-size: 2.5rem; margin-bottom: 2rem; color: white; }
+        .example-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .example-card { background: var(--bg-glass); border: 1px solid var(--glass-border); border-radius: 15px; padding: 1.5rem; }
+        .example-card h3 { color: var(--accent-pink); margin-bottom: 1rem; }
+        .replacement { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 8px; }
+        .bad { color: var(--accent-red); text-decoration: line-through; flex: 1; }
+        .good { color: var(--accent-green); flex: 1; }
+        footer { background: var(--bg-glass); border-top: 1px solid var(--glass-border); padding: 2rem 0; text-align: center; margin-top: 4rem; }
+        @media (max-width: 768px) {
+            .tool-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../../index.html" style="text-decoration:none;"><h1>FOLDEROL</h1></a>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../index.html#pricing">Pricing</a></li>
+                <li><a href="../../index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>Bonus Terms Optimizer</h1>
+            <p>Transform aggressive bonus language into compliant, deliverable content that reaches the inbox.</p>
+        </div>
+    </section>
+
+    <section class="tool-section">
+        <div class="container">
+            <div class="tool-grid">
+                <div class="panel">
+                    <h2>Original Text</h2>
+                    <textarea id="inputText" placeholder="Paste your promotional content here..."></textarea>
+                    <button onclick="optimizeText()">Optimize Content</button>
+                </div>
+                
+                <div class="panel">
+                    <h2>Optimized Text</h2>
+                    <div id="outputText" class="output-area">Your optimized content will appear here...</div>
+                    <button onclick="copyText()" style="display:none;" id="copyBtn">Copy to Clipboard</button>
+                    <div id="stats" class="stats">
+                        <h3>Optimization Results</h3>
+                        <div class="stats-grid">
+                            <div>
+                                <div class="stat-value" id="wordsReplaced">0</div>
+                                <div class="stat-label">Words Replaced</div>
+                            </div>
+                            <div>
+                                <div class="stat-value" id="riskReduction">0%</div>
+                                <div class="stat-label">Risk Reduced</div>
+                            </div>
+                            <div>
+                                <div class="stat-value" id="compliance">0</div>
+                                <div class="stat-label">Compliance Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="examples">
+        <div class="container">
+            <h2>Common Replacements</h2>
+            <div class="example-grid">
+                <div class="example-card">
+                    <h3>Money Terms</h3>
+                    <div class="replacement">
+                        <span class="bad">Free money</span>
+                        <span>→</span>
+                        <span class="good">Bonus credit</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">Cash prize</span>
+                        <span>→</span>
+                        <span class="good">Reward</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">Easy money</span>
+                        <span>→</span>
+                        <span class="good">Gaming opportunity</span>
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>Urgency Terms</h3>
+                    <div class="replacement">
+                        <span class="bad">Act now!</span>
+                        <span>→</span>
+                        <span class="good">Available today</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">Limited time!</span>
+                        <span>→</span>
+                        <span class="good">Current promotion</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">Hurry!</span>
+                        <span>→</span>
+                        <span class="good">Join today</span>
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <h3>Guarantee Terms</h3>
+                    <div class="replacement">
+                        <span class="bad">Guaranteed win</span>
+                        <span>→</span>
+                        <span class="good">Play opportunity</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">Risk free</span>
+                        <span>→</span>
+                        <span class="good">Bonus protected</span>
+                    </div>
+                    <div class="replacement">
+                        <span class="bad">100% sure</span>
+                        <span>→</span>
+                        <span class="good">Great odds</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Folderol. Email delivery solutions for the gaming industry. | <a href="../../index.html" class="back-link">← Back to Folderol</a></p>
+    </footer>
+
+    <script>
+        // Simple replacement rules
+        var replacements = {
+            'free money': 'bonus credit',
+            'cash prize': 'reward',
+            'easy money': 'gaming opportunity',
+            'act now': 'available today',
+            'limited time': 'current promotion',
+            'hurry': 'join today',
+            'guaranteed win': 'play opportunity',
+            'guaranteed': 'eligible for',
+            'risk free': 'bonus protected',
+            'risk-free': 'bonus protected',
+            'no risk': 'protected play',
+            'amazing': 'special',
+            'incredible': 'valued',
+            'click here': 'visit',
+            'free': 'complimentary',
+            'winner': 'player',
+            'win': 'play',
+            'best ever': 'premium',
+            'deal': 'offer'
+        };
+        function optimizeText() {
+            var input = document.getElementById('inputText').value;
+            var output = input;
+            var count = 0;
+            if (!input.trim()) {
+                alert('Please enter some text to optimize');
+                return;
+            }
+            // Replace bad terms
+            for (var bad in replacements) {
+                var good = replacements[bad];
+                var regex = new RegExp(bad, 'gi');
+                var matches = output.match(regex);
+                if (matches) {
+                    count += matches.length;
+                    output = output.replace(regex, '<span class="replaced">' + good + '</span>');
+                }
+            }
+            // Fix excessive punctuation
+            output = output.replace(/!{2,}/g, '<span class="replaced">!</span>');
+            output = output.replace(/\?{2,}/g, '<span class="replaced">?</span>');
+            // Fix ALL CAPS
+            output = output.replace(/\b[A-Z]{4,}\b/g, function(match) {
+                count++;
+                return '<span class="replaced">' + match.charAt(0) + match.slice(1).toLowerCase() + '</span>';
+            });
+            // Show results
+            document.getElementById('outputText').innerHTML = output;
+            document.getElementById('copyBtn').style.display = 'block';
+            document.getElementById('stats').style.display = 'block';
+            // Update stats
+            document.getElementById('wordsReplaced').textContent = count;
+            document.getElementById('riskReduction').textContent = Math.min(count * 15, 95) + '%';
+            document.getElementById('compliance').textContent = Math.max(100 - (count * 5), 20);
+        }
+        function copyText() {
+            var text = document.getElementById('outputText').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                var btn = document.getElementById('copyBtn');
+                btn.textContent = 'Copied!';
+                setTimeout(function() {
+                    btn.textContent = 'Copy to Clipboard';
+                }, 2000);
+            });
+        }
+        // Load example on start
+        window.onload = function() {
+            document.getElementById('inputText').value = 'GET FREE MONEY NOW!!! GUARANTEED WINS on ALL slots! RISK-FREE deposit - ACT NOW! LIMITED TIME ONLY! This AMAZING DEAL is the BEST EVER!!!';
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template Gallery - Folderol</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-glass-dark: rgba(0, 0, 0, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border-hover: rgba(102, 126, 234, 0.3);
+            --accent-purple: #9333ea;
+            --accent-pink: #ec4899;
+            --accent-blue: #2F80ED;
+            --accent-blue-light: #56CCF2;
+            --accent-gold: #FFD700;
+            --accent-green: #27AE60;
+            --text-light: #fff;
+            --text-medium: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-light);
+            background: var(--bg-dark);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(86, 204, 242, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .header {
+            padding: 3rem 0;
+            text-align: center;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-pink);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .back-link:hover {
+            background: rgba(236, 72, 153, 0.2);
+            transform: translateX(-5px);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.8rem 2rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .filter-tab.active,
+        .filter-tab:hover {
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+        }
+
+        /* Template Grid */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .template-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(147, 51, 234, 0.2);
+            border-color: var(--glass-border-hover);
+        }
+
+        .template-preview {
+            height: 300px;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-content {
+            padding: 1.5rem;
+        }
+
+        .template-category {
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .template-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .template-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .template-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--text-medium);
+        }
+
+        .stat-value {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-preview {
+            flex: 1;
+            padding: 0.8rem;
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 10px;
+            color: var(--accent-purple);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-preview:hover {
+            background: rgba(147, 51, 234, 0.2);
+            color: white;
+        }
+
+        .btn-download {
+            flex: 1;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            max-width: 1000px;
+            max-height: 90vh;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-medium);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--accent-pink);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .email-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            color: #333;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Template Previews */
+        .welcome-template {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .bonus-template {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .retention-template {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .vip-template {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .tournament-template {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .compliance-template {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            color: #333;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .filter-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .modal {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .template-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../../index.html" class="back-link">← Back to Folderol</a>
+            <h1>Email Template Gallery</h1>
+            <p>High-converting email templates designed specifically for gaming & gambling operators</p>
+        </div>
+
+        <div class="filter-tabs">
+            <div class="filter-tab active" data-category="all">All Templates</div>
+            <div class="filter-tab" data-category="welcome">Welcome Series</div>
+            <div class="filter-tab" data-category="bonus">Bonus Offers</div>
+            <div class="filter-tab" data-category="retention">Retention</div>
+            <div class="filter-tab" data-category="vip">VIP Program</div>
+            <div class="filter-tab" data-category="tournament">Tournaments</div>
+            <div class="filter-tab" data-category="compliance">Compliance</div>
+        </div>
+
+        <div class="template-grid" id="templateGrid">
+            <!-- Welcome Series Templates -->
+            <div class="template-card" data-category="welcome">
+                <div class="template-preview welcome-template">
+                    <h2>🎰 Welcome to [Casino Name]!</h2>
+                    <p>Get ready for the ultimate gaming experience...</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>Claim Your 100% Welcome Bonus</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">Welcome Series</span>
+                    <h3 class="template-title">Casino Welcome Email</h3>
+                    <p class="template-description">A warm welcome email that introduces new players to your casino with a compelling bonus offer and clear next steps.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">78%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">24%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">2/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('welcome1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('welcome1')">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bonus Offer Templates -->
+            <div class="template-card" data-category="bonus">
+                <div class="template-preview bonus-template">
+                    <h2>🔥 FLASH BONUS ALERT</h2>
+                    <p>24-Hour Special Offer</p>
+                    <div style="background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>200% Match + 50 Free Spins</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">Bonus Offers</span>
+                    <h3 class="template-title">Flash Bonus Campaign</h3>
+                    <p class="template-description">High-urgency bonus email designed to drive immediate action with time-sensitive offers and compelling CTAs.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">65%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">31%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">3/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('bonus1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('bonus1')">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retention Templates -->
+            <div class="template-card" data-category="retention">
+                <div class="template-preview retention-template">
+                    <h2>🎯 We Miss You!</h2>
+                    <p>Come back and play with exclusive offers</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>Special Comeback Bonus</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">Retention</span>
+                    <h3 class="template-title">Win-Back Campaign</h3>
+                    <p class="template-description">Re-engagement email for dormant players with personalized offers and emotional hooks to drive return visits.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">58%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">18%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">2/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('retention1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('retention1')">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIP Program Templates -->
+            <div class="template-card" data-category="vip">
+                <div class="template-preview vip-template">
+                    <h2>👑 VIP EXCLUSIVE</h2>
+                    <p>You've been selected for our premium tier</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>Unlock Elite Benefits</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">VIP Program</span>
+                    <h3 class="template-title">VIP Tier Upgrade</h3>
+                    <p class="template-description">Luxury-focused email announcing VIP status upgrades with exclusive benefits and premium treatment messaging.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">84%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">42%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">1/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('vip1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('vip1')">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tournament Templates -->
+            <div class="template-card" data-category="tournament">
+                <div class="template-preview tournament-template">
+                    <h2>⚡ MEGA TOURNAMENT</h2>
+                    <p>$50,000 Prize Pool - Join Now!</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>Registration Ends Soon</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">Tournaments</span>
+                    <h3 class="template-title">Tournament Announcement</h3>
+                    <p class="template-description">Exciting tournament invitation with prize pool highlights and competitive elements to drive participation.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">72%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">28%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">2/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('tournament1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('tournament1')">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Templates -->
+            <div class="template-card" data-category="compliance">
+                <div class="template-preview compliance-template">
+                    <h2>📋 Important Update</h2>
+                    <p>Responsible Gaming Reminder</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <strong>Review Your Limits</strong>
+                    </div>
+                </div>
+                <div class="template-content">
+                    <span class="template-category">Compliance</span>
+                    <h3 class="template-title">Responsible Gaming</h3>
+                    <p class="template-description">Professional compliance-focused email for responsible gaming reminders and regulatory requirements.</p>
+                    <div class="template-stats">
+                        <div class="stat">
+                            <span>📈 Open Rate:</span>
+                            <span class="stat-value">89%</span>
+                        </div>
+                        <div class="stat">
+                            <span>💰 CVR:</span>
+                            <span class="stat-value">12%</span>
+                        </div>
+                        <div class="stat">
+                            <span>🏆 Spam Score:</span>
+                            <span class="stat-value">0/10</span>
+                        </div>
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn-preview" onclick="openModal('compliance1')">Preview</button>
+                        <button class="btn-download" onclick="downloadTemplate('compliance1')">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Template Preview</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="emailPreview" class="email-preview">
+                    <!-- Email content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Template content data
+        const templates = {
+            welcome1: {
+                title: "Casino Welcome Email",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; overflow: hidden;">
+                        <div style="padding: 40px 30px; text-align: center;">
+                            <h1 style="font-size: 32px; margin-bottom: 20px;">🎰 Welcome to Royal Casino!</h1>
+                            <p style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">
+                                Get ready for the ultimate gaming experience with thousands of games, massive jackpots, and exclusive VIP rewards!
+                            </p>
+                            <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                                <h2 style="font-size: 24px; margin-bottom: 15px;">🎁 WELCOME BONUS</h2>
+                                <div style="font-size: 36px; font-weight: bold; margin-bottom: 10px;">100% MATCH</div>
+                                <div style="font-size: 18px;">Up to $500 + 50 Free Spins</div>
+                            </div>
+                            <a href="#" style="display: inline-block; background: #FFD700; color: #333; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; margin-bottom: 20px;">CLAIM NOW</a>
+                            <div style="font-size: 14px; opacity: 0.8; line-height: 1.6;">
+                                <p>• Instant deposits & withdrawals</p>
+                                <p>• 24/7 customer support</p>
+                                <p>• 1000+ premium games</p>
+                            </div>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; text-align: center; font-size: 12px;">
+                            <p>18+ Only. Terms & Conditions Apply. Gamble Responsibly.</p>
+                        </div>
+                    </div>
+                `
+            },
+            bonus1: {
+                title: "Flash Bonus Campaign",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 10px; overflow: hidden;">
+                        <div style="padding: 40px 30px; text-align: center;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; display: inline-block; margin-bottom: 20px; font-size: 14px; font-weight: bold;">
+                                ⏰ FLASH SALE - 24 HOURS ONLY
+                            </div>
+                            <h1 style="font-size: 36px; margin-bottom: 15px;">🔥 MEGA BONUS ALERT</h1>
+                            <p style="font-size: 20px; margin-bottom: 30px;">
+                                Don't miss out on our biggest bonus of the month!
+                            </p>
+                            <div style="background: rgba(255,255,255,0.15); padding: 30px; border-radius: 15px; margin-bottom: 25px;">
+                                <div style="font-size: 48px; font-weight: bold; margin-bottom: 10px;">200%</div>
+                                <div style="font-size: 20px; margin-bottom: 15px;">MATCH BONUS</div>
+                                <div style="font-size: 24px; color: #FFD700;">+ 50 FREE SPINS</div>
+                            </div>
+                            <div style="background: #FF6B6B; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+                                <div style="font-size: 18px; font-weight: bold;">⏰ Expires in: 23:45:12</div>
+                            </div>
+                            <a href="#" style="display: inline-block; background: #FFD700; color: #333; padding: 18px 50px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">GRAB BONUS NOW</a>
+                            <p style="font-size: 14px; opacity: 0.9;">Minimum deposit $25. Bonus code: FLASH200</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 20px; text-align: center; font-size: 12px;">
+                            <p>18+ Only. T&C Apply. Max bonus $1000. Wagering 35x.</p>
+                        </div>
+                    </div>
+                `
+            },
+            retention1: {
+                title: "Win-Back Campaign",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 10px; overflow: hidden;">
+                        <div style="padding: 40px 30px; text-align: center;">
+                            <h1 style="font-size: 32px; margin-bottom: 20px;">🎯 We Miss You!</h1>
+                            <p style="font-size: 18px; margin-bottom: 25px; opacity: 0.9;">
+                                It's been a while since your last visit. We've got something special waiting for you!
+                            </p>
+                            <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                                <h2 style="font-size: 24px; margin-bottom: 15px;">🎁 COMEBACK BONUS</h2>
+                                <div style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">75% MATCH</div>
+                                <div style="font-size: 18px; margin-bottom: 15px;">Up to $300</div>
+                                <div style="font-size: 16px; color: #FFD700;">+ 25 Free Spins on Starburst</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                <h3 style="font-size: 18px; margin-bottom: 15px;">What's New Since You Left:</h3>
+                                <div style="text-align: left; font-size: 14px; line-height: 1.8;">
+                                    <p>✨ 50+ New slot games added</p>
+                                    <p>🏆 New VIP loyalty program</p>
+                                    <p>💫 Faster payouts (under 24hrs)</p>
+                                    <p>🎮 Live dealer tournaments</p>
+                                </div>
+                            </div>
+                            <a href="#" style="display: inline-block; background: #FFD700; color: #333; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; margin-bottom: 15px;">WELCOME ME BACK</a>
+                            <p style="font-size: 12px; opacity: 0.8;">Bonus valid for 7 days. Use code: WELCOME75</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.2); padding: 20px; text-align: center; font-size: 12px;">
+                            <p>If you no longer wish to receive emails, <a href="#" style="color: #FFD700;">click here</a></p>
+                        </div>
+                    </div>
+                `
+            },
+            vip1: {
+                title: "VIP Tier Upgrade",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; border-radius: 10px; overflow: hidden;">
+                        <div style="padding: 40px 30px; text-align: center;">
+                            <div style="background: linear-gradient(135deg, #FFD700, #FFA500); padding: 15px 30px; border-radius: 25px; display: inline-block; margin-bottom: 25px;">
+                                <div style="font-size: 24px; font-weight: bold; color: #333;">👑 VIP EXCLUSIVE</div>
+                            </div>
+                            <h1 style="font-size: 28px; margin-bottom: 20px; color: #2c3e50;">Congratulations, John!</h1>
+                            <p style="font-size: 18px; margin-bottom: 25px; color: #555;">
+                                You've been promoted to <strong>PLATINUM VIP STATUS</strong>
+                            </p>
+                            <div style="background: rgba(255,255,255,0.7); padding: 30px; border-radius: 15px; margin-bottom: 30px; border: 2px solid #FFD700;">
+                                <h2 style="font-size: 22px; margin-bottom: 20px; color: #2c3e50;">Your Elite Benefits:</h2>
+                                <div style="text-align: left; font-size: 16px; line-height: 2; color: #444;">
+                                    <p>💎 Personal VIP Account Manager</p>
+                                    <p>🚀 Priority withdrawals (2-hour processing)</p>
+                                    <p>🎁 Weekly cashback up to $500</p>
+                                    <p>🏆 Exclusive VIP tournaments</p>
+                                    <p>✈️ Luxury vacation packages</p>
+                                    <p>🍾 Birthday & anniversary gifts</p>
+                                </div>
+                            </div>
+                            <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                <h3 style="font-size: 18px; margin-bottom: 10px;">Your VIP Manager:</h3>
+                                <p style="font-size: 16px;"><strong>Sarah Mitchell</strong></p>
+                                <p style="font-size: 14px;">📧 sarah.mitchell@royalcasino.com</p>
+                                <p style="font-size: 14px;">📱 +1-800-VIP-ROYAL</p>
+                            </div>
+                            <a href="#" style="display: inline-block; background: linear-gradient(135deg, #FFD700, #FFA500); color: #333; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px;">ACCESS VIP LOUNGE</a>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.1); padding: 20px; text-align: center; font-size: 12px; color: #666;">
+                            <p>VIP benefits are subject to terms and conditions. Maintain your status with regular play.</p>
+                        </div>
+                    </div>
+                `
+            },
+            tournament1: {
+                title: "Tournament Announcement",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; border-radius: 10px; overflow: hidden;">
+                        <div style="padding: 40px 30px; text-align: center;">
+                            <div style="background: #FF6B6B; color: white; padding: 10px 25px; border-radius: 20px; display: inline-block; margin-bottom: 20px; font-size: 14px; font-weight: bold;">
+                                🔥 LIVE NOW
+                            </div>
+                            <h1 style="font-size: 36px; margin-bottom: 15px; color: #2c3e50;">⚡ MEGA TOURNAMENT</h1>
+                            <p style="font-size: 20px; margin-bottom: 25px; color: #555;">
+                                The biggest slots tournament of the year!
+                            </p>
+                            <div style="background: rgba(255,255,255,0.8); padding: 30px; border-radius: 15px; margin-bottom: 25px; border: 3px solid #FFD700;">
+                                <div style="font-size: 48px; font-weight: bold; margin-bottom: 10px; color: #FF6B6B;">$50,000</div>
+                                <div style="font-size: 20px; margin-bottom: 15px; color: #2c3e50;">TOTAL PRIZE POOL</div>
+                                <div style="font-size: 16px; color: #666;">1st Place: $20,000 • 2nd Place: $10,000 • 3rd Place: $5,000</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 25px; background: rgba(255,255,255,0.6); padding: 20px; border-radius: 10px;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #FF6B6B;">2,847</div>
+                                    <div style="font-size: 12px; color: #666;">PLAYERS</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #4ECDC4;">6d 14h</div>
+                                    <div style="font-size: 12px; color: #666;">TIME LEFT</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #FFD700;">$10</div>
+                                    <div style="font-size: 12px; color: #666;">MIN BUY-IN</div>
+                                </div>
+                            </div>
+                            <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                                <h3 style="font-size: 18px; margin-bottom: 15px;">How to Play:</h3>
+                                <div style="text-align: left; font-size: 14px; line-height: 1.8;">
+                                    <p>1. Join the tournament (minimum $10 buy-in)</p>
+                                    <p>2. Play any eligible slot game</p>
+                                    <p>3. Earn points for every win</p>
+                                    <p>4. Climb the leaderboard</p>
+                                    <p>5. Win your share of $50,000!</p>
+                                </div>
+                            </div>
+                            <a href="#" style="display: inline-block; background: #FF6B6B; color: white; padding: 18px 50px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">JOIN TOURNAMENT</a>
+                            <p style="font-size: 12px; color: #666;">Tournament ends Sunday 11:59 PM EST</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.1); padding: 20px; text-align: center; font-size: 12px; color: #666;">
+                            <p>18+ Only. Terms & Conditions Apply. See full tournament rules.</p>
+                        </div>
+                    </div>
+                `
+            },
+            compliance1: {
+                title: "Responsible Gaming",
+                content: `
+                    <div style="max-width: 600px; margin: 0 auto; background: #f8f9fa; color: #333; border-radius: 10px; overflow: hidden; border: 1px solid #ddd;">
+                        <div style="background: #2c3e50; color: white; padding: 20px; text-align: center;">
+                            <h1 style="font-size: 24px; margin-bottom: 10px;">📋 Important Account Update</h1>
+                            <p style="font-size: 14px; opacity: 0.9;">Responsible Gaming Reminder</p>
+                        </div>
+                        <div style="padding: 30px;">
+                            <p style="font-size: 16px; margin-bottom: 20px; line-height: 1.6;">
+                                Dear Valued Player,
+                            </p>
+                            <p style="font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                                As part of our commitment to responsible gaming, we're reaching out to remind you about the tools available to help you maintain control over your gaming experience.
+                            </p>
+                            <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
+                                <h3 style="font-size: 16px; margin-bottom: 15px; color: #1976D2;">Your Current Limits:</h3>
+                                <div style="font-size: 14px; line-height: 1.8;">
+                                    <p><strong>Daily Deposit Limit:</strong> $500</p>
+                                    <p><strong>Weekly Deposit Limit:</strong> $2,000</p>
+                                    <p><strong>Session Time Limit:</strong> 3 hours</p>
+                                    <p><strong>Last Review Date:</strong> March 15, 2024</p>
+                                </div>
+                            </div>
+                            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                                <h3 style="font-size: 16px; margin-bottom: 15px; color: #856404;">Available Tools:</h3>
+                                <div style="font-size: 14px; line-height: 1.8;">
+                                    <p>• Deposit limits (daily, weekly, monthly)</p>
+                                    <p>• Time-based session reminders</p>
+                                    <p>• Self-exclusion options (24h, 7d, 30d, permanent)</p>
+                                    <p>• Reality check notifications</p>
+                                    <p>• Access to support resources</p>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <a href="#" style="display: inline-block; background: #2c3e50; color: white; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: 500; margin: 5px;">Review My Limits</a>
+                                <a href="#" style="display: inline-block; background: #28a745; color: white; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-weight: 500; margin: 5px;">Get Support</a>
+                            </div>
+                            <div style="background: #f8d7da; padding: 15px; border-radius: 5px; border-left: 4px solid #dc3545; margin-bottom: 20px;">
+                                <p style="font-size: 13px; margin: 0; color: #721c24;">
+                                    <strong>Need Help?</strong> If you or someone you know has a gambling problem, call the National Problem Gambling Helpline at 1-800-522-4700 or visit ncpgambling.org
+                                </p>
+                            </div>
+                            <p style="font-size: 13px; color: #666; line-height: 1.5;">
+                                This email is sent as part of our regulatory compliance. You cannot unsubscribe from these important account notifications.
+                            </p>
+                        </div>
+                        <div style="background: #e9ecef; padding: 15px; text-align: center; font-size: 12px; color: #666;">
+                            <p>Royal Casino • Licensed and Regulated • Gamble Responsibly</p>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Filter functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const category = this.dataset.category;
+                
+                // Update active tab
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter templates
+                const cards = document.querySelectorAll('.template-card');
+                cards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Modal functionality
+        function openModal(templateId) {
+            const template = templates[templateId];
+            if (template) {
+                document.getElementById('modalTitle').textContent = template.title;
+                document.getElementById('emailPreview').innerHTML = template.content;
+                document.getElementById('templateModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('templateModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Download functionality
+        function downloadTemplate(templateId) {
+            const template = templates[templateId];
+            if (template) {
+                // Create downloadable HTML file
+                const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${template.title}</title>
+</head>
+<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f5f5f5;">
+    ${template.content}
+</body>
+</html>`;
+
+                // Create and trigger download
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${template.title.toLowerCase().replace(/\s+/g, '-')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('templateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
